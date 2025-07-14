@@ -8,10 +8,11 @@ metadata:
 data:
   config.alloy: |
     loki.source.kubernetes_events "events" {
-      forward_to = [loki.write.local.receiver]
+      forward_to = [loki.write.in_cluster.receiver]
       namespaces = ["{{ .Release.Namespace }}"]
+      log_format = "json"
     }
-    loki.write "local" {
+    loki.write "in_cluster" {
       endpoint {
         url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
         basic_auth {
