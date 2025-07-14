@@ -12,6 +12,8 @@ alloy:
   controller:
     # Use deployment instead of daemonset because we only fetch kubernetes events with the API. When fetching logs we have to use the daemonset.
     type: deployment
+    podLabels:
+      app: ces
   service:
     # We do not need this
     enabled: false
