@@ -1,0 +1,13 @@
+apiVersion: v2
+name: k8s-alloy
+description: OpenTelemetry Collector distribution with programmable pipelines
+type: application
+version: 0.0.0-replaceme
+appVersion: "0.0.0-replaceme"
+dependencies:
+  - name: alloy
+    version: 1.1.2
+    repository: https://grafana.github.io/helm-charts
+
+annotations:
+  "k8s.cloudogu.com/ces-dependency/k8s-loki": ">=3.3.2-2"

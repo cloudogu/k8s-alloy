@@ -1,0 +1,11 @@
+apiVersion: v1
+values:
+  images:
+    alloy: docker.io/grafana/alloy:v1.9.2
+patches:
+  values.yaml:
+    alloy:
+      image:
+        registry: "{{ registryFrom .images.alloy }}"
+        repository: "{{ repositoryFrom .images.alloy }}"
+        tag: "{{ tagFrom .images.alloy }}"

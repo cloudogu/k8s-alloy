@@ -1,0 +1,40 @@
+networkPolicies:
+  enabled: true
+global:
+  image:
+    pullSecrets:
+      - name: ces-container-registries
+alloy:
+  nameOverride: "k8s-alloy"
+  configReloader:
+    # We do not really need the config hot reload because we should always change configuration with the component custom resource. That should trigger a pod restart.
+    enabled: false
+  controller:
+    # Use deployment instead of daemonset because we only fetch kubernetes events with the API. When fetching logs we have to use the daemonset.
+    type: deployment
+  service:
+    # We do not need this
+    enabled: false
+  networkPolicy:
+    enabled: false
+  alloy:
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 100Mi
+    configMap:
+      create: false
+      name: k8s-alloy
+    extraEnv:
+      - name: LOKI_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: k8s-loki-gateway-secret
+            key: username
+      - name: LOKI_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: k8s-loki-gateway-secret
+            key: password

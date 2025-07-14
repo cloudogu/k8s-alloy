@@ -1,0 +1,23 @@
+# We have to use a separate template to determine the current namespace for the collection. (Templating in values.yaml is not possible)
+{{- if not .Values.alloy.alloy.configMap.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-alloy
+  namespace: {{ .Release.Namespace }}
+data:
+  config.alloy: |
+    loki.source.kubernetes_events "events" {
+      forward_to = [loki.write.local.receiver]
+      namespaces = ["{{ .Release.Namespace }}"]
+    }
+    loki.write "local" {
+      endpoint {
+        url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
+        basic_auth {
+          username = sys.env("LOKI_USERNAME")
+          password = sys.env("LOKI_PASSWORD")
+        }
+      }
+    }
+{{- end }}
