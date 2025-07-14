@@ -4,6 +4,7 @@ global:
       - name: ces-container-registries
 networkPolicies:
   enabled: true
+logLevel: info # possible values: error, warn, info and debug.
 alloy:
   nameOverride: "k8s-alloy"
   configReloader:

@@ -21,4 +21,8 @@ data:
         }
       }
     }
+    logging {
+      level  = "{{ .Values.logLevel }}"
+      format = "json"
+    }
 {{- end }}
