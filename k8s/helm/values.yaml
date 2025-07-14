@@ -1,9 +1,9 @@
-networkPolicies:
-  enabled: true
 global:
   image:
     pullSecrets:
       - name: ces-container-registries
+networkPolicies:
+  enabled: true
 alloy:
   nameOverride: "k8s-alloy"
   configReloader:
