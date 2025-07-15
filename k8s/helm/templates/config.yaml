@@ -7,12 +7,29 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   config.alloy: |
-    loki.source.kubernetes_events "events" {
-      forward_to = [loki.write.in_cluster.receiver]
+    loki.source.kubernetes_events "default" {
+      forward_to = [loki.process.modify_event_labels.receiver]
       namespaces = ["{{ .Release.Namespace }}"]
       log_format = "json"
     }
-    loki.write "in_cluster" {
+
+    loki.process "modify_event_labels" {
+      // Extract "kind" and "type" from log line.
+      forward_to = [loki.write.events.receiver]
+      stage.json {
+        expressions = {"kind" = "", "type" = ""}
+      }
+
+      // Set extracted values as loki labels.
+      stage.labels {
+        values = {
+          "kind" = "",
+          "level" = "type",
+        }
+      }
+    }
+
+    loki.write "events" {
       endpoint {
         url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
         basic_auth {
@@ -21,8 +38,13 @@ data:
         }
       }
     }
+
     logging {
       level  = "{{ .Values.logLevel }}"
       format = "json"
     }
 {{- end }}
+
+
+# { "detected_level": "Normal", "instance": "loki.source.kubernetes_events.default", "job": "loki.source.kubernetes_events", "kind": "Dogu", "level": "Normal", "namespace": "ecosystem", "service_name": "loki.source.kubernetes_events" }
+# {"count":4,"eventRV":"586874","kind":"Dogu","msg":"successfully updated health status to \"available\"","name":"ldap","objectAPIversion":"k8s.cloudogu.com/v2","objectRV":"586713","reason":"HealthStatusUpdate","reportingcontroller":"k8s-dogu-operator","sourcecomponent":"k8s-dogu-operator","type":"Normal"}
