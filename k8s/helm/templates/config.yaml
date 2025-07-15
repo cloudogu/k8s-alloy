@@ -44,7 +44,3 @@ data:
       format = "json"
     }
 {{- end }}
-
-
-# { "detected_level": "Normal", "instance": "loki.source.kubernetes_events.default", "job": "loki.source.kubernetes_events", "kind": "Dogu", "level": "Normal", "namespace": "ecosystem", "service_name": "loki.source.kubernetes_events" }
-# {"count":4,"eventRV":"586874","kind":"Dogu","msg":"successfully updated health status to \"available\"","name":"ldap","objectAPIversion":"k8s.cloudogu.com/v2","objectRV":"586713","reason":"HealthStatusUpdate","reportingcontroller":"k8s-dogu-operator","sourcecomponent":"k8s-dogu-operator","type":"Normal"}
