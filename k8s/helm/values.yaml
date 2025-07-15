@@ -8,8 +8,17 @@ logLevel: info # possible values: error, warn, info and debug.
 alloy:
   nameOverride: "k8s-alloy"
   configReloader:
-    # We do not really need the config hot reload because we should always change configuration with the component custom resource. That should trigger a pod restart.
-    enabled: false
+    # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
+    enabled: true
+    securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
+      runAsUser: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
   controller:
     # Use deployment instead of daemonset because we only fetch kubernetes events with the API. When fetching logs we have to use the daemonset.
     type: deployment
@@ -21,6 +30,14 @@ alloy:
   networkPolicy:
     enabled: false
   alloy:
+    securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
+      runAsUser: 473
+      runAsGroup: 473
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     resources:
       requests:
         memory: 100Mi
