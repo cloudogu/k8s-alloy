@@ -1,0 +1,25 @@
+{{- if .Values.networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: k8s-alloy-loki-ingress
+  namespace: {{ .Release.Namespace }}
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ces
+              app.kubernetes.io/instance: k8s-alloy
+              app.kubernetes.io/name: k8s-alloy
+      ports:
+        - port: 8080
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      app: ces
+      app.kubernetes.io/component: gateway
+      app.kubernetes.io/name: k8s-loki
+  policyTypes:
+    - Ingress
+{{- end }}
