@@ -1,0 +1,60 @@
+global:
+  image:
+    pullSecrets:
+      - name: ces-container-registries
+networkPolicies:
+  enabled: true
+logLevel: info # possible values: error, warn, info and debug.
+alloy:
+  nameOverride: "k8s-alloy"
+  configReloader:
+    # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
+    enabled: true
+    securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
+      runAsUser: 65534
+      runAsGroup: 65534
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+  controller:
+    # Use deployment instead of daemonset because we only fetch kubernetes events with the API. When fetching logs we have to use the daemonset.
+    type: deployment
+    podLabels:
+      app: ces
+  service:
+    # We do not need this
+    enabled: false
+  networkPolicy:
+    enabled: false
+  alloy:
+    securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
+      runAsUser: 473
+      runAsGroup: 473
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        memory: 200Mi
+        cpu: 100m
+      limits:
+        memory: 200Mi
+    configMap:
+      create: false
+      name: k8s-alloy
+    extraEnv:
+      - name: LOKI_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: k8s-loki-gateway-secret
+            key: username
+      - name: LOKI_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: k8s-loki-gateway-secret
+            key: password

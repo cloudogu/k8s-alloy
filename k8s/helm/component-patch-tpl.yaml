@@ -1,0 +1,17 @@
+apiVersion: v1
+values:
+  images:
+    alloy: 'docker.io/grafana/alloy:v1.9.2'
+    configReloader: 'quay.io/prometheus-operator/prometheus-config-reloader:v0.81.0'
+patches:
+  values.yaml:
+    alloy:
+      image:
+        registry: "{{ registryFrom .images.alloy }}"
+        repository: "{{ repositoryFrom .images.alloy }}"
+        tag: "{{ tagFrom .images.alloy }}"
+      configReloader:
+        image:
+          registry: "{{ registryFrom .images.configReloader }}"
+          repository: "{{ repositoryFrom .images.configReloader }}"
+          tag: "{{ tagFrom .images.configReloader }}"
