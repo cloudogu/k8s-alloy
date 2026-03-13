@@ -7,10 +7,11 @@ networkPolicies:
 logLevel: info # possible values: error, warn, info and debug.
 alloy:
   image:
-    tag: v1.3.1
+    tag: v1.14.0
   nameOverride: "k8s-alloy"
   configReloader:
-    # tag: TODO Update to fix CVE-2025-68121 See: https://quay.io/repository/prometheus-operator/prometheus-config-reloader?tab=tags
+    image:
+      tag: v0.89.0
     # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
     enabled: true
     securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
