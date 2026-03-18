@@ -6,8 +6,13 @@ networkPolicies:
   enabled: true
 logLevel: info # possible values: error, warn, info and debug.
 alloy:
+  image:
+    tag: v1.14.0
   nameOverride: "k8s-alloy"
   configReloader:
+    image:
+      # TODO: Update to fix CVE-2025-68121 See: https://quay.io/repository/prometheus-operator/prometheus-config-reloader?tab=tags
+      tag: v0.89.0
     # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
     enabled: true
     securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
@@ -20,24 +25,39 @@ alloy:
         drop:
           - ALL
   controller:
-    # Use deployment instead of daemonset because we only fetch kubernetes events with the API. When fetching logs we have to use the daemonset.
-    type: deployment
+    type: daemonset
     podLabels:
       app: ces
+    volumes:
+      extra:
+        - hostPath:
+            path: /var/log/pods
+          name: pod-logs
+        - hostPath:
+            path: /var/lib/alloy
+            type: DirectoryOrCreate
+          name: alloy-working-state
   service:
     # We do not need this
     enabled: false
   networkPolicy:
     enabled: false
   alloy:
-    securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
-      runAsUser: 473
-      runAsGroup: 473
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
+    # Save working state here
+    storagePath: /var/lib/alloy
+    enableReporting: false
+    # Mount log files
+    mounts:
+      extra:
+        - mountPath: /var/log/pods
+          name: pod-logs
+          readOnly: true
+        - mountPath: /var/lib/alloy
+          name: alloy-working-state
+          readOnly: false
+    securityContext:
+      runAsUser: 0
+      privileged: true
     resources:
       requests:
         memory: 200Mi
@@ -48,6 +68,10 @@ alloy:
       create: false
       name: k8s-alloy
     extraEnv:
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
       - name: LOKI_USERNAME
         valueFrom:
           secretKeyRef:

@@ -15,7 +15,7 @@ data:
 
     loki.process "modify_event_labels" {
       // Extract "kind" and "type" from log line.
-      forward_to = [loki.write.events.receiver]
+      forward_to = [loki.write.default.receiver]
       stage.json {
         expressions = {"kind" = "", "type" = ""}
       }
@@ -29,12 +29,78 @@ data:
       }
     }
 
-    loki.write "events" {
+    // Query k8s api to get pods and metadata.
+    discovery.kubernetes "local_pods" {
+      role = "pod"
+      selectors {
+        role = "pod"
+        field = "spec.nodeName=" + env("NODE_NAME")
+      }
+      namespaces {
+        names = ["{{ .Release.Namespace }}"]
+      }
+    }
+
+    discovery.relabel "pod_logs" {
+      targets = discovery.kubernetes.local_pods.targets
+
+      // Add internal __path__ label for the loki source file component.
+      rule {
+        source_labels = [
+          "__meta_kubernetes_namespace",
+          "__meta_kubernetes_pod_name",
+          "__meta_kubernetes_pod_uid",
+          "__meta_kubernetes_pod_container_name",
+        ]
+        separator = ";"
+        regex = "(.*);(.*);(.*);(.*)"
+        replacement = "/var/log/pods/${1}_${2}_${3}/${4}/*.log"
+        target_label = "__path__"
+      }
+
+      rule {
+        // This component does not exist in alloy but we use this because it is the same format like the event component.
+        replacement  = "loki.source.kubernetes_logs"
+        target_label = "job"
+      }
+
+      // Convert internal labels to ones that will persist for loki.
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        target_label  = "namespace"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        target_label  = "pod"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        target_label  = "container"
+      }
+
+      rule {
+        source_labels = ["__meta_kubernetes_pod_node_name"]
+        target_label  = "node"
+      }
+    }
+
+    local.file_match "pod_logs" {
+      path_targets = discovery.relabel.pod_logs.output
+    }
+
+    loki.source.file "pods" {
+      targets = local.file_match.pod_logs.targets
+      forward_to = [loki.write.default.receiver]
+    }
+
+    loki.write "default" {
       endpoint {
         url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
         basic_auth {
-          username = sys.env("LOKI_USERNAME")
-          password = sys.env("LOKI_PASSWORD")
+          username = env("LOKI_USERNAME")
+          password = env("LOKI_PASSWORD")
         }
       }
     }
