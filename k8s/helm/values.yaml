@@ -11,8 +11,7 @@ alloy:
   nameOverride: "k8s-alloy"
   configReloader:
     image:
-      # TODO: Update to fix CVE-2025-68121 See: https://quay.io/repository/prometheus-operator/prometheus-config-reloader?tab=tags
-      tag: v0.89.0
+      tag: v0.90.0
     # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
     enabled: true
     securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
