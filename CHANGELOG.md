@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- [#3] Update config reloader to v0.90.0 to fix CVEs
+- [#6] Update config reloader to v0.90.0 to fix CVEs
 
 ## [v1.1.2-2] - 2026-03-18
 
