@@ -12,12 +12,13 @@ include build/make/variables.mk
 include build/make/clean.mk
 include build/make/release.mk
 include build/make/self-update.mk
+include build/make/k8s.mk
 
 ##@ Release
 
 include build/make/k8s-component.mk
 
-.PHONY: alloy-release
+.PHONY: alloy-release ${BINARY_YQ}
 alloy-release: ## Interactively starts the release workflow for alloy
 	@echo "Starting git flow release..."
 	@build/make/release.sh alloy

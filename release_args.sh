@@ -15,7 +15,7 @@ update_versions_modify_files() {
 
   # Extract alloy chart
   local alloyVersion
-  alloyVersion=$(yq '.dependencies[] | select(.name=="alloy").version' < "k8s/helm/Chart.yaml")
+  alloyVersion=$(./.bin/yq '.dependencies[] | select(.name=="alloy").version' < "k8s/helm/Chart.yaml")
   local alloyPackage
   alloyPackage="k8s/helm/charts/alloy-${alloyVersion}.tgz"
 
@@ -23,22 +23,22 @@ update_versions_modify_files() {
   tar -zxvf "${alloyPackage}" -C "/tmp" > /dev/null
 
   local alloyAppVersion
-  alloyAppVersion=$(yq '.appVersion' < "${alloyTempChartYaml}")
+  alloyAppVersion=$(./.bin/yq '.appVersion' < "${alloyTempChartYaml}")
 
   echo "Set images in component patch template"
 
   local alloyImageRegistry
   local alloyImageRepo
-  alloyImageRegistry=$(yq '.image.registry' < "${alloyTempValues}")
-  alloyImageRepo=$(yq '.image.repository' < "${alloyTempValues}")
+  alloyImageRegistry=$(./.bin/yq '.image.registry' < "${alloyTempValues}")
+  alloyImageRepo=$(./.bin/yq '.image.repository' < "${alloyTempValues}")
   setAttributeInComponentPatchTemplate ".values.images.alloy" "${alloyImageRegistry}/${alloyImageRepo}:${alloyAppVersion}"
 
   local alloyConfigReloadRegistry
   local alloyConfigReloadRepo
   local alloyConfigReloadTag
-  alloyConfigReloadRegistry=$(yq '.configReloader.image.registry' < "${alloyTempValues}")
-  alloyConfigReloadRepo=$(yq '.configReloader.image.repository' < "${alloyTempValues}")
-  alloyConfigReloadTag=$(yq '.configReloader.image.tag' < "${alloyTempValues}")
+  alloyConfigReloadRegistry=$(./.bin/yq '.configReloader.image.registry' < "${alloyTempValues}")
+  alloyConfigReloadRepo=$(./.bin/yq '.configReloader.image.repository' < "${alloyTempValues}")
+  alloyConfigReloadTag=$(./.bin/yq '.configReloader.image.tag' < "${alloyTempValues}")
   setAttributeInComponentPatchTemplate ".values.images.configReloader" "${alloyConfigReloadRegistry}/${alloyConfigReloadRepo}:${alloyConfigReloadTag}"
 }
 
@@ -46,7 +46,7 @@ setAttributeInComponentPatchTemplate() {
   local key="${1}"
   local value="${2}"
 
-  yq -i "${key} = \"${value}\"" "${componentTemplateFile}"
+  ./.bin/yq -i "${key} = \"${value}\"" "${componentTemplateFile}"
 }
 
 update_versions_stage_modified_files() {
