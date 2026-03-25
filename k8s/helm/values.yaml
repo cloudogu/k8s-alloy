@@ -7,7 +7,7 @@ networkPolicies:
 logLevel: info # possible values: error, warn, info and debug.
 alloy:
   image:
-    tag: v1.14.0
+    tag: v1.14.2
   nameOverride: "k8s-alloy"
   configReloader:
     image:
