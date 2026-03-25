@@ -18,7 +18,7 @@ include build/make/k8s.mk
 
 include build/make/k8s-component.mk
 
-.PHONY: alloy-release ${BINARY_YQ}
-alloy-release: ## Interactively starts the release workflow for alloy
+.PHONY: alloy-release
+alloy-release: ${BINARY_YQ} ## Interactively starts the release workflow for alloy
 	@echo "Starting git flow release..."
 	@build/make/release.sh alloy
