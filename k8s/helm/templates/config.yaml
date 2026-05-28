@@ -74,11 +74,23 @@ data:
         source_labels = ["__meta_kubernetes_pod_controller_name"]
         target_label  = "controller"
       }
+    
+    // regex to extract the controller name from the deployment or the statefulset/daemonset name.
   
+      // If it's a Deployment (ends in an 8-10 digit hex hash), strip ONLY that hash
       rule {
         source_labels = ["controller"]
-        regex         = "(.+)-[0-9a-f]{8,10}(-[a-z0-9]{5})?$|(.+)-[a-z0-9]{5}$"
-        replacement   = "${1}${3}"
+        regex         = "(.+)-[0-9a-f]{8,10}$"
+        replacement   = "${1}"
+        target_label  = "controller"
+      }
+
+      // If it's a StatefulSet/DaemonSet pod fallback (ends in a 5-digit alphanumeric hash),
+      // but ONLY if preceded by another dash (ensuring we don't chop words like 'ds' or 'k8s')
+      rule {
+        source_labels = ["controller"]
+        regex         = "(.+)-[b-df-hj-np-tv-z0-9]{5}$"
+        replacement   = "${1}"
         target_label  = "controller"
       }
 
