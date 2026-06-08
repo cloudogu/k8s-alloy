@@ -134,7 +134,7 @@ data:
 
     loki.write "default" {
       endpoint {
-        url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
+        url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc/loki/api/v1/push"
         basic_auth {
           username = env("LOKI_USERNAME")
           password = env("LOKI_PASSWORD")
