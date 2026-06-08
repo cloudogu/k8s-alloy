@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.1.2-5] - 2026-06-08
+### Fixed
+- [#10] Remove hardcoded cluster-domain from loki-gateway URL
+
 ## [v1.1.2-4] - 2026-06-04
 ### Added
 - [#8] add a 'controller' label to log entries for filtering 
