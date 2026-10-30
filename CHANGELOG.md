@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- [#13] Update Alloy to v1.21.3 and prometheus-config-reloader to v0.94.2 to fix CVE-2026-111943.
+- [#13] Update the Jenkins Go build image to 1.27.3 to fix CVE-2026-111497 and CVE-2026-111943.
+
+### Changed
+- [#13] Replace deprecated Alloy `env()` calls with `sys.env()` for compatibility with the upgraded release.
+
 ## [v1.1.2-5] - 2026-06-08
 ### Fixed
 - [#10] Remove hardcoded cluster-domain from loki-gateway URL

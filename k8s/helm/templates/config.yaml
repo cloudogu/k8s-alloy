@@ -34,7 +34,7 @@ data:
       role = "pod"
       selectors {
         role = "pod"
-        field = "spec.nodeName=" + env("NODE_NAME")
+        field = "spec.nodeName=" + sys.env("NODE_NAME")
       }
       namespaces {
         names = ["{{ .Release.Namespace }}"]
@@ -136,8 +136,8 @@ data:
       endpoint {
         url = "http://k8s-loki-gateway.{{ .Release.Namespace }}.svc/loki/api/v1/push"
         basic_auth {
-          username = env("LOKI_USERNAME")
-          password = env("LOKI_PASSWORD")
+          username = sys.env("LOKI_USERNAME")
+          password = sys.env("LOKI_PASSWORD")
         }
       }
     }
