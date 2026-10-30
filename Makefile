@@ -1,5 +1,5 @@
 ARTIFACT_ID=k8s-alloy
-MAKEFILES_VERSION=10.9.0
+MAKEFILES_VERSION=11.2.0
 VERSION=1.1.2-5
 
 .DEFAULT_GOAL:=help
@@ -17,6 +17,7 @@ include build/make/k8s.mk
 ##@ Release
 
 include build/make/k8s-component.mk
+include build/trivy.mk
 
 .PHONY: alloy-release
 alloy-release: ${BINARY_YQ} ## Interactively starts the release workflow for alloy

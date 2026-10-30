@@ -15,7 +15,7 @@ productionReleaseBranch = "main"
 registryNamespace = "k8s"
 registryUrl = "registry.cloudogu.com"
 
-goVersion = "1.24"
+goVersion = "1.27.3"
 helmTargetDir = "target/k8s"
 helmChartDir = "${helmTargetDir}/helm"
 
@@ -42,7 +42,18 @@ node('docker') {
                                     stage("Lint helm") {
                                         make 'helm-lint'
                                     }
+
+                                    // Install yq here so the scan can run on the Docker agent without Go.
+                                    make 'install-yq'
                                 }
+
+                stage('Scan images with Trivy') {
+                    try {
+                        make "trivy-scan TRIVY_ADDITIONAL_IMAGES=golang:${goVersion}"
+                    } finally {
+                        archiveArtifacts artifacts: 'target/trivy/*', allowEmptyArchive: true
+                    }
+                }
 
                 K3d k3d = new K3d(this, "${WORKSPACE}", "${WORKSPACE}/k3d", env.PATH)
 
