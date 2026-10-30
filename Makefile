@@ -17,6 +17,7 @@ include build/make/k8s.mk
 ##@ Release
 
 include build/make/k8s-component.mk
+include build/trivy.mk
 
 .PHONY: alloy-release
 alloy-release: ${BINARY_YQ} ## Interactively starts the release workflow for alloy

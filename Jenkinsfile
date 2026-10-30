@@ -42,7 +42,18 @@ node('docker') {
                                     stage("Lint helm") {
                                         make 'helm-lint'
                                     }
+
+                                    // Install yq here so the scan can run on the Docker agent without Go.
+                                    make 'install-yq'
                                 }
+
+                stage('Scan images with Trivy') {
+                    try {
+                        make "trivy-scan TRIVY_ADDITIONAL_IMAGES=golang:${goVersion}"
+                    } finally {
+                        archiveArtifacts artifacts: 'target/trivy/*', allowEmptyArchive: true
+                    }
+                }
 
                 K3d k3d = new K3d(this, "${WORKSPACE}", "${WORKSPACE}/k3d", env.PATH)
 
