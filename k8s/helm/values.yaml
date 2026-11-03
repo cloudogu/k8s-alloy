@@ -7,11 +7,11 @@ networkPolicies:
 logLevel: info # possible values: error, warn, info and debug.
 alloy:
   image:
-    tag: v1.14.2
+    tag: v1.21.3
   nameOverride: "k8s-alloy"
   configReloader:
     image:
-      tag: v0.90.0
+      tag: v0.94.2
     # We need the config hot reload because we always change configuration with the component custom resource. Changing config not related to the deployment does not take effekt e.g. logLevel.
     enabled: true
     securityContext: # See https://grafana.com/docs/alloy/latest/configure/nonroot/
